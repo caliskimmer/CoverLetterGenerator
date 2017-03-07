@@ -14,6 +14,10 @@ public class Form extends JPanel{
     private JPanel companySection;
     private JPanel technologySection;
     private JPanel customTextSection;
+    private JTextField tfCompany;
+    private JTextField tfPosition;
+    private JList<String> techList;
+    private JTextArea taCustomText;
     private JFileChooser fileChooser;
     private JButton submit;
 
@@ -41,8 +45,8 @@ public class Form extends JPanel{
         JLabel lCompany = new JLabel("Company");
         JLabel lPosition = new JLabel("Position");
 
-        JTextField tfCompany = new JTextField(MAX_TF_WIDTH);
-        JTextField tfPosition = new JTextField(MAX_TF_WIDTH);
+        tfCompany = new JTextField(MAX_TF_WIDTH);
+        tfPosition = new JTextField(MAX_TF_WIDTH);
 
         lCompany.setLabelFor(tfCompany);
         lPosition.setLabelFor(tfPosition);
@@ -80,7 +84,7 @@ public class Form extends JPanel{
 
         JTextField tfTechnology = new JTextField(MAX_TF_WIDTH);
         DefaultListModel listModel = new DefaultListModel();
-        JList<String> techList = new JList<String>(listModel);
+        techList = new JList<String>(listModel);
         Map<String, Boolean> listHelper = new HashMap<>();
 
         techList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -123,7 +127,6 @@ public class Form extends JPanel{
         lTechnology.setLabelFor(tfTechnology);
         lList.setLabelFor(techList);
 
-
         technologySection.add(lTechnology);
         technologySection.add(lList);
 
@@ -159,7 +162,7 @@ public class Form extends JPanel{
         SpringLayout layout = (SpringLayout) customTextSection.getLayout();
 
         JLabel lCustomText = new JLabel("Custom Text");
-        JTextArea taCustomText = new JTextArea();
+        taCustomText = new JTextArea();
         taCustomText.setWrapStyleWord(true);
         taCustomText.setLineWrap(true);
         JScrollPane customTextPane = new JScrollPane(taCustomText);
@@ -203,6 +206,13 @@ public class Form extends JPanel{
         buildCustomTextSection();
 
         submit = new JButton("submit");
+
+        submit.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
 
         add(submit);
 
