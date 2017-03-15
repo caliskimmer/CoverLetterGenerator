@@ -18,12 +18,36 @@ public class Form extends JPanel{
     private JTextField tfPosition;
     private JList<String> techList;
     private JTextArea taCustomText;
+    private FormController controller;
     private JFileChooser fileChooser;
     private JButton submit;
 
     public Form() {
         super();
+    }
 
+    public Form(FormController controller) {
+        this.controller = controller;
+    }
+
+    public JButton getSubmitButton() {
+        return submit;
+    }
+
+    public JTextField getCompany() {
+        return tfCompany;
+    }
+
+    public JTextField getPosition() {
+        return tfPosition;
+    }
+
+    public JTextArea getCustomText() {
+        return taCustomText;
+    }
+
+    public JList<String> getTechList() {
+        return techList;
     }
 
     private JPanel initSection(Dimension d) {
@@ -191,32 +215,13 @@ public class Form extends JPanel{
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setPreferredSize(formDimensions);
 
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-        String coverLetterPath = null;
-
-        while (fileChooser.showOpenDialog(this) == JFileChooser.CANCEL_OPTION) {
-                JOptionPane.showMessageDialog(this, "You must select a cover letter template!");
-        }
-
-        coverLetterPath = fileChooser.getSelectedFile().getAbsolutePath();
-
         buildCompanySection();
         buildTechnologySection();
         buildCustomTextSection();
+        submit = new JButton("Submit");
 
-        submit = new JButton("submit");
-
-        submit.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-
+        controller.bind();
         add(submit);
-
-        //this.add(submit);
     }
 
 }

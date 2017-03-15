@@ -1,14 +1,15 @@
 import javax.swing.*;
+import java.io.File;
 
 
 public class GUI extends JFrame{
-    private Form form;
+    private FormController controller;
     private static GUI instance;
     private static final String APP_NAME = "Cover Letter Generator";
 
     private GUI(String name) {
         this.setName(name);
-        this.form = new Form();
+        this.controller = new FormController();
     }
 
     public static GUI getInstance() {
@@ -28,7 +29,7 @@ public class GUI extends JFrame{
     }
 
     private void setUp() {
-        form.build();
+        Form form = controller.buildFormView();
         getInstance().add(form);
     }
 }

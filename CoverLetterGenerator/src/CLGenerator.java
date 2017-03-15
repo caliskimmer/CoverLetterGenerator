@@ -3,10 +3,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class CLGenerator {
     private File coverLetterTemplate;
-    private List<String> replacementContent;
+    private Map<String, String> replacementContent;
     private String fileName;
 
     //Strings represent keywords to replace in template resume
@@ -16,26 +17,40 @@ public class CLGenerator {
     private final String POSITION     = "<POSITION>";
     private final String[] KEYWORDS = {COMPANY, POSITION, TECHNOLOGIES, CUSTOM_TEXT};
 
-    public CLGenerator(File coverLetterTemplate, ArrayList<String> replacementContent, String fileName) {
+    public CLGenerator() {}
+
+    public CLGenerator(File coverLetterTemplate, Map<String, String> replacementContent, String fileName) {
         this.coverLetterTemplate = coverLetterTemplate;
         this.replacementContent = replacementContent;
         this.fileName = fileName;
     }
 
-    public CLGenerator(File coverLetterTemplate, ArrayList<String> replacementContent) {
+    public CLGenerator(File coverLetterTemplate, Map<String,String> replacementContent) {
         this.coverLetterTemplate = coverLetterTemplate;
         this.replacementContent = replacementContent;
-        this.fileName = "GeneratedCoverLetter.docx";
+        this.fileName = this.replacementContent.get("<COMPANY>") + ".docx";
     }
 
-    private String replaceKeywords(List<String> replacementContent) {
+    public void setCoverLetterTemplate(File coverLetterTemplate) {
+        this.coverLetterTemplate = coverLetterTemplate;
+    }
+
+    public void setReplacementContent(Map<String, String> replacementContent) {
+        this.replacementContent = replacementContent;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    private String replaceKeywords(Map<String, String> replacementContent) {
         String content = null;
 
         try {
             content = new String(Files.readAllBytes(Paths.get(coverLetterTemplate.getAbsolutePath())));
 
-            for (int ii = 0; ii < replacementContent.size(); ii++) {
-                content.replaceFirst(replacementContent.get(ii), KEYWORDS[ii]);
+            for (Map.Entry<String, String> pair : replacementContent.entrySet()) {
+                content.replaceFirst(pair.getValue(), pair.getKey());
             }
 
         } catch (IOException e) {
@@ -54,20 +69,17 @@ public class CLGenerator {
         out.close();
     }
 
-    public boolean generate() {
-        if (!this.coverLetterTemplate.exists()) {
+    public boolean generate() throws IOException{
+        if (this.fileName == null || this.replacementContent == null || this.coverLetterTemplate == null) {
             return false;
         }
 
-        String content = replaceKeywords(this.replacementContent);
-
-        try {
-            buildCoverLetter(this.fileName, this.coverLetterTemplate, content);
-        } catch (IOException e) {
-            System.err.println("Cover Letter generation failed");
-            e.printStackTrace();
+        if (!coverLetterTemplate.exists()) {
             return false;
         }
+
+        String content = replaceKeywords(replacementContent);
+        buildCoverLetter(fileName, coverLetterTemplate, content);
 
         return true;
     }
