@@ -4,6 +4,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 public class CLGenerator {
     private File coverLetterTemplate;
@@ -37,6 +41,10 @@ public class CLGenerator {
 
     public void setReplacementContent(Map<String, String> replacementContent) {
         this.replacementContent = replacementContent;
+
+        if (this.fileName == null) {
+            this.fileName = this.replacementContent.get("<COMPANY>") + ".docx";
+        }
     }
 
     public void setFileName(String fileName) {
@@ -44,29 +52,38 @@ public class CLGenerator {
     }
 
     private String replaceKeywords(Map<String, String> replacementContent) {
-        String content = null;
+        String content = retrieveDocumentContent();
 
-        try {
-            content = new String(Files.readAllBytes(Paths.get(coverLetterTemplate.getAbsolutePath())));
-
-            for (Map.Entry<String, String> pair : replacementContent.entrySet()) {
-                content.replaceFirst(pair.getValue(), pair.getKey());
-            }
-
-        } catch (IOException e) {
-            //change this line for more proper error detection!
-            System.err.println("File not found");
+        for (Map.Entry<String, String> pair : replacementContent.entrySet()) {
+            content = content.replaceFirst(pair.getKey(), pair.getValue());
         }
 
         return content;
     }
 
+    private String retrieveDocumentContent() {
+        XWPFWordExtractor extractor = null;
+        try {
+            FileInputStream fis = new FileInputStream(coverLetterTemplate.getAbsolutePath());
+            XWPFDocument document = new XWPFDocument(fis);
+            extractor = new XWPFWordExtractor(document);
+        } catch (Exception e) {
+            //TODO: Might want to improve on this...
+            e.printStackTrace();
+        }
+
+        return extractor.getText();
+    }
+
     private  void buildCoverLetter(String fileName, File template, String content) throws IOException {
-        File newCoverLetter = new File(template.getName()+fileName+".docx");
-        FileWriter fWriter = new FileWriter(newCoverLetter.getName());
-        BufferedWriter out = new BufferedWriter(fWriter);
-        out.write(content);
-        out.close();
+        XWPFDocument document = new XWPFDocument();
+        XWPFParagraph buffer = document.createParagraph();
+        XWPFRun bufferRun = buffer.createRun();
+        bufferRun.setText(content);
+        bufferRun.setFontSize(12);
+        FileOutputStream fos = new FileOutputStream(new File(fileName));
+        document.write(fos);
+        fos.close();
     }
 
     public boolean generate() throws IOException{
