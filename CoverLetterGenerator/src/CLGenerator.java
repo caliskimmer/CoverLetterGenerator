@@ -76,11 +76,21 @@ public class CLGenerator {
     }
 
     private  void buildCoverLetter(String fileName, File template, String content) throws IOException {
+        String[] splitContent = content.split("\n");
         XWPFDocument document = new XWPFDocument();
-        XWPFParagraph buffer = document.createParagraph();
-        XWPFRun bufferRun = buffer.createRun();
-        bufferRun.setText(content);
-        bufferRun.setFontSize(12);
+
+        for (String partial : splitContent) {
+            XWPFParagraph buffer = document.createParagraph();
+            XWPFRun bufferRun = buffer.createRun();
+
+            if (!partial.isEmpty()) {
+                bufferRun.setText(partial);
+            }
+
+            bufferRun.setFontSize(12);
+        }
+
+
         FileOutputStream fos = new FileOutputStream(new File(fileName));
         document.write(fos);
         fos.close();
