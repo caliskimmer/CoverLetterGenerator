@@ -90,7 +90,6 @@ public class CLGenerator {
             bufferRun.setFontSize(12);
         }
 
-
         FileOutputStream fos = new FileOutputStream(new File(fileName));
         document.write(fos);
         fos.close();

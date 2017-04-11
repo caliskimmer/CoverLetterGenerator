@@ -60,6 +60,10 @@ public class Form extends JPanel{
         return newPanel;
     }
 
+    private void buildFileOptionSection() {
+        //TODO: implement so users can change template and set dst path
+    }
+
     private void buildCompanySection() {
         final int COMPANY_SECTION_HEIGHT = 100;
 
@@ -215,6 +219,7 @@ public class Form extends JPanel{
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setPreferredSize(formDimensions);
 
+        buildFileOptionSection();
         buildCompanySection();
         buildTechnologySection();
         buildCustomTextSection();
