@@ -14,6 +14,8 @@ public class Form extends JPanel{
     private JPanel companySection;
     private JPanel technologySection;
     private JPanel customTextSection;
+    private JPanel settingsSection;
+    private JLabel lDestinationOptionPath;
     private JTextField tfCompany;
     private JTextField tfPosition;
     private JList<String> techList;
@@ -50,6 +52,14 @@ public class Form extends JPanel{
         return techList;
     }
 
+    public String getFileDst() {
+        if (lDestinationOptionPath.getText().equals("") || lDestinationOptionPath.getText().equals("No path selected")) {
+            return null;
+        }
+
+        return lDestinationOptionPath.getText();
+    }
+
     private JPanel initSection(Dimension d) {
         SpringLayout layout = new SpringLayout();
         JPanel newPanel = new JPanel();
@@ -60,8 +70,41 @@ public class Form extends JPanel{
         return newPanel;
     }
 
-    private void buildFileOptionSection() {
-        //TODO: implement so users can change template and set dst path
+    private void buildSettingsSection() {
+        final int SETTINGS_SECTION_HEIGHT = 60;
+        final int ALIGNMENT_TO_BUTTON_PADDING = DEFAULT_PADDING + 5;
+
+        settingsSection = initSection(new Dimension(SECTION_WIDTH, SETTINGS_SECTION_HEIGHT));
+        SpringLayout layout = (SpringLayout) settingsSection.getLayout();
+
+        JButton fileButton = new JButton("Save As...");
+
+        lDestinationOptionPath = new JLabel("No path selected");
+
+        settingsSection.add(lDestinationOptionPath);
+        settingsSection.add(fileButton);
+
+        layout.putConstraint(SpringLayout.WEST, fileButton, DEFAULT_PADDING, SpringLayout.WEST, settingsSection);
+        layout.putConstraint(SpringLayout.WEST, lDestinationOptionPath, DEFAULT_PADDING, SpringLayout.EAST, fileButton);
+
+        layout.putConstraint(SpringLayout.NORTH, fileButton, DEFAULT_PADDING, SpringLayout.NORTH, settingsSection);
+        layout.putConstraint(SpringLayout.NORTH, lDestinationOptionPath, ALIGNMENT_TO_BUTTON_PADDING, SpringLayout.NORTH, settingsSection);
+
+        fileButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                int selection = fileChooser.showOpenDialog(Form.this);
+
+                if (selection == JFileChooser.APPROVE_OPTION) {
+                    lDestinationOptionPath.setText(fileChooser.getSelectedFile().getAbsolutePath());
+                }
+            }
+        });
+
+        add(settingsSection);
     }
 
     private void buildCompanySection() {
@@ -92,7 +135,7 @@ public class Form extends JPanel{
 
         layout.putConstraint(SpringLayout.NORTH, lCompany, DEFAULT_PADDING, SpringLayout.NORTH, companySection);
         layout.putConstraint(SpringLayout.NORTH, tfCompany, DEFAULT_PADDING, SpringLayout.NORTH, companySection);
-        layout.putConstraint(SpringLayout.NORTH, lPosition, DEFAULT_PADDING, SpringLayout.SOUTH, lCompany);
+        layout.putConstraint(SpringLayout.NORTH, lPosition, DEFAULT_PADDING, SpringLayout.SOUTH, tfCompany);
         layout.putConstraint(SpringLayout.NORTH, tfPosition, DEFAULT_PADDING, SpringLayout.SOUTH, tfCompany);
 
         add(companySection);
@@ -219,10 +262,11 @@ public class Form extends JPanel{
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setPreferredSize(formDimensions);
 
-        buildFileOptionSection();
         buildCompanySection();
         buildTechnologySection();
         buildCustomTextSection();
+        buildSettingsSection();
+
         submit = new JButton("Submit");
 
         controller.bind();

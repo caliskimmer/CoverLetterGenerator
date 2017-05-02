@@ -13,6 +13,7 @@ public class CLGenerator {
     private File coverLetterTemplate;
     private Map<String, String> replacementContent;
     private String fileName;
+    private String fileDst;
 
     //Strings represent keywords to replace in template resume
     private final String CUSTOM_TEXT  = "<CUSTOM_TEXT>";
@@ -23,10 +24,11 @@ public class CLGenerator {
 
     public CLGenerator() {}
 
-    public CLGenerator(File coverLetterTemplate, Map<String, String> replacementContent, String fileName) {
+    public CLGenerator(File coverLetterTemplate, Map<String, String> replacementContent, String fileName, String fileDst) {
         this.coverLetterTemplate = coverLetterTemplate;
         this.replacementContent = replacementContent;
         this.fileName = fileName;
+        this.fileDst = fileDst;
     }
 
     public CLGenerator(File coverLetterTemplate, Map<String,String> replacementContent) {
@@ -45,6 +47,10 @@ public class CLGenerator {
         if (this.fileName == null) {
             this.fileName = this.replacementContent.get("<COMPANY>") + ".docx";
         }
+    }
+
+    public void setFileDst(String fileDst) {
+        this.fileDst = fileDst;
     }
 
     public void setFileName(String fileName) {
@@ -75,8 +81,9 @@ public class CLGenerator {
         return extractor.getText();
     }
 
-    private  void buildCoverLetter(String fileName, File template, String content) throws IOException {
+    private  void buildCoverLetter(String fileDst, String fileName, File template, String content) throws IOException {
         String[] splitContent = content.split("\n");
+        String absolutePath = fileDst + "/" + fileName;
         XWPFDocument document = new XWPFDocument();
 
         for (String partial : splitContent) {
@@ -90,7 +97,7 @@ public class CLGenerator {
             bufferRun.setFontSize(12);
         }
 
-        FileOutputStream fos = new FileOutputStream(new File(fileName));
+        FileOutputStream fos = new FileOutputStream(new File(absolutePath));
         document.write(fos);
         fos.close();
     }
@@ -105,7 +112,7 @@ public class CLGenerator {
         }
 
         String content = replaceKeywords(replacementContent);
-        buildCoverLetter(fileName, coverLetterTemplate, content);
+        buildCoverLetter(fileDst, fileName, coverLetterTemplate, content);
 
         return true;
     }

@@ -28,10 +28,13 @@ public class FormController {
                 replacementContent.put("<TECHNOLOGY>", Utils.jListToString(form.getTechList()));
 
                 generator.setReplacementContent(replacementContent);
+                generator.setFileDst(form.getFileDst());
 
                 try {
                     generator.generate();
+                    JOptionPane.showMessageDialog(form, "Cover letter was generated successfully!");
                 } catch (IOException err) {
+                    JOptionPane.showMessageDialog(form, "Generation failed.");
                     System.err.println("Cover Letter generation failed");
                     err.printStackTrace();
                 }
